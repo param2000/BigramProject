@@ -1,7 +1,6 @@
 import re
 import sys
 from collections import Counter
-
 from bigram_plot import plot_histogram
 
 debug = True
@@ -9,8 +8,8 @@ debug = True
 def clean_text(text):
     # Lowercase and remove non-alphabetic characters except spaces
     temp = re.sub(r'[^a-zA-Z\s]', '', text.lower())
-    print(temp)
-    return re.sub(r'[^a-zA-Z\s]', '', text.lower())
+    if debug: print (temp)
+    return temp
 
 def generate_bigrams(text):
     words = clean_text(text).split()
@@ -21,7 +20,10 @@ def generate_bigrams(text):
     return bigrams
 
 
-def bigram_histogram(text):
+def bigram_with_counts(text):
+    """
+    :rtype: dictionary with bigram and count value
+    """
     bigrams = generate_bigrams(text)
 
     if debug: print(bigrams)
@@ -40,9 +42,8 @@ def analyze_text_source(source):
     else:
         raise ValueError("Input must be a string path or plain text")
 
-    counts = bigram_histogram(text)
+    counts = bigram_with_counts(text)
     return counts
-
 
 # Testing
 if __name__ == "__main__":

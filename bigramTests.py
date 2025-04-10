@@ -1,6 +1,6 @@
 import unittest
 from collections import Counter
-from bigram import clean_text, generate_bigrams, bigram_histogram, analyze_text_source
+from bigram import clean_text, generate_bigrams, bigram_with_counts, analyze_text_source
 import tempfile
 import os
 
@@ -28,7 +28,7 @@ class TestBigramHistogram(unittest.TestCase):
             "b b": 1,
             "b a": 1
         })
-        self.assertEqual(bigram_histogram(text), expected_counts)
+        self.assertEqual(bigram_with_counts(text), expected_counts)
 
     def test_analyze_text_source_with_file(self):
         content = "foo bar baz foo bar"
