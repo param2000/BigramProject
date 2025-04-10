@@ -42,8 +42,9 @@ def analyze_text_source(source):
     else:
         raise ValueError("Input must be a string path or plain text")
 
-    counts = bigram_with_counts(text)
-    return counts
+    bigram_dic_with_counts  = bigram_with_counts(text)
+    if debug: print(bigram_dic_with_counts)
+    return bigram_dic_with_counts
 
 # Testing
 if __name__ == "__main__":
