@@ -3,7 +3,7 @@ import sys
 from collections import Counter
 from bigram_plot import plot_histogram
 
-debug = True
+debug = False
 
 def clean_text(text):
     # Lowercase and remove non-alphabetic characters except spaces

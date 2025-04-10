@@ -16,6 +16,19 @@ class TestBigramHistogram(unittest.TestCase):
         expected = ["the quick", "quick brown", "brown fox"]
         self.assertEqual(generate_bigrams(text), expected)
 
+    def test_clean_text_lowercases(self):
+        """Test that clean_text converts text to lowercase."""
+        text = "ABC Def"
+        cleaned = clean_text(text)
+        self.assertEqual(cleaned, "abc def")
+
+    def test_generate_bigrams_with_extra_spaces(self):
+        """Test that extra spaces are correctly handled in generate_bigrams."""
+        text = "   Hello    world   "
+        # After cleaning: "hello world " -> split into ['hello', 'world']
+        expected = ["hello world"]
+        self.assertEqual(generate_bigrams(text), expected)
+
     def test_get_bigrams_insufficient_words(self):
         self.assertEqual(generate_bigrams("Word"), [])
         self.assertEqual(generate_bigrams(""), [])
@@ -31,6 +44,7 @@ class TestBigramHistogram(unittest.TestCase):
         self.assertEqual(bigram_with_counts(text), expected_counts)
 
     def test_analyze_text_source_with_file(self):
+        """temp file read and should have correct output and counts"""
         content = "foo bar baz foo bar"
         expected = Counter({
             "foo bar": 2,
@@ -56,6 +70,11 @@ class TestBigramHistogram(unittest.TestCase):
         })
         result = analyze_text_source(text)
         self.assertEqual(result, expected)
+
+    def test_analyze_text_source_invalid_input(self):
+        """Test that analyze_text_source raises a ValueError when the input is not a string."""
+        with self.assertRaises(ValueError):
+            analyze_text_source(123)
 
 if __name__ == '__main__':
     unittest.main()
