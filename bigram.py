@@ -7,6 +7,7 @@ debug = False
 
 def clean_text(text):
     # Lowercase and remove non-alphabetic characters except spaces
+    """ return the cleanup sub string """
     temp = re.sub(r'[^a-zA-Z\s]', '', text.lower())
     if debug: print (temp)
     return temp
@@ -22,13 +23,17 @@ def generate_bigrams(text):
 
 def bigram_with_counts(text):
     """
-    :rtype: dictionary with bigram and count value
+    :return type: dictionary with bigram and count value
     """
     bigrams = generate_bigrams(text)
 
-    if debug: print(bigrams)
     #generate the dictionary pairs with counts
     bigram_counts = Counter(bigrams)
+
+    #debugging info
+    if debug:
+        print(bigrams)
+        print(bigram_counts)
     return bigram_counts
 
 
@@ -42,8 +47,11 @@ def analyze_text_source(source):
     else:
         raise ValueError("Input must be a string path or plain text")
 
+    #get bigrams
     bigram_dic_with_counts  = bigram_with_counts(text)
+
     if debug: print(bigram_dic_with_counts)
+
     return bigram_dic_with_counts
 
 # Testing
