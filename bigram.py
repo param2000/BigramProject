@@ -24,7 +24,7 @@ def bigram_histogram(text):
     bigrams = generate_bigrams(text)
 
     if debug: print(bigrams)
-
+    #generate the dictionary pairs with counts
     bigram_counts = Counter(bigrams)
     return bigram_counts
 
@@ -51,7 +51,6 @@ def analyze_text_source(source):
         raise ValueError("Input must be a string path or plain text")
 
     counts = bigram_histogram(text)
-    plot_histogram(counts)
     return counts
 
 
@@ -65,3 +64,5 @@ if __name__ == "__main__":
     counts = analyze_text_source(input_text)
     for bigram, count in counts.items():
         print(f"{bigram}: {count}")
+
+    plot_histogram(counts)

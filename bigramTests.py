@@ -41,7 +41,6 @@ class TestBigramHistogram(unittest.TestCase):
         with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.txt') as temp:
             temp.write(content)
             temp_path = temp.name
-
         try:
             result = analyze_text_source(temp_path)
             self.assertEqual(result, expected)
