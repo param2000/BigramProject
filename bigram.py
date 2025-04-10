@@ -1,7 +1,8 @@
 import re
 import sys
 from collections import Counter
-import matplotlib.pyplot as plt
+
+from bigram_plot import plot_histogram
 
 debug = True
 
@@ -27,17 +28,6 @@ def bigram_histogram(text):
     #generate the dictionary pairs with counts
     bigram_counts = Counter(bigrams)
     return bigram_counts
-
-
-def plot_histogram(bigram_counts):
-    labels, values = zip(*bigram_counts.items())
-    plt.figure(figsize=(10, 7))
-    plt.barh(labels, values)
-    plt.xlabel("Frequency")
-    plt.ylabel("Bigrams(n=2)")
-    plt.title("Bigram Frequency Histogram")
-    plt.tight_layout()
-    plt.show()
 
 
 def analyze_text_source(source):
