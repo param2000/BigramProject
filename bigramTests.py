@@ -7,6 +7,7 @@ import os
 class TestBigramHistogram(unittest.TestCase):
 
     def test_clean_text(self):
+        """test cleanup cases"""
         self.assertEqual(clean_text("Hello, World!"), "hello world")
         self.assertEqual(clean_text("123 Testing!"), " testing")
         self.assertEqual(clean_text("No@Special#Chars$"), "nospecialchars")
@@ -14,6 +15,12 @@ class TestBigramHistogram(unittest.TestCase):
     def test_get_bigrams_normal(self):
         text = "The quick brown fox"
         expected = ["the quick", "quick brown", "brown fox"]
+        self.assertEqual(generate_bigrams(text), expected)
+
+    def test_get_bigrams_normal(self):
+        """Test the presence of numbers in the text"""
+        text = "The address is 12345 nowhere street omaha nebraska"
+        expected = ['the address','address is', 'is nowhere', 'nowhere street', 'street omaha', 'omaha nebraska']
         self.assertEqual(generate_bigrams(text), expected)
 
     def test_clean_text_lowercases(self):
@@ -30,10 +37,12 @@ class TestBigramHistogram(unittest.TestCase):
         self.assertEqual(generate_bigrams(text), expected)
 
     def test_get_bigrams_insufficient_words(self):
+        """one word should not generate a bigram"""
         self.assertEqual(generate_bigrams("Word"), [])
         self.assertEqual(generate_bigrams(""), [])
 
     def test_bigram_singles(self):
+        """ Test with single characters"""
         text = "a a a b b a"
         expected_counts = Counter({
             "a a": 2,
@@ -62,6 +71,7 @@ class TestBigramHistogram(unittest.TestCase):
             os.remove(temp_path)
 
     def test_analyze_text_source_with_raw_text(self):
+        """ test frequencies with raw text"""
         text = "one two three one two"
         expected = Counter({
             "one two": 2,
