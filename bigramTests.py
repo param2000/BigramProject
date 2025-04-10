@@ -33,7 +33,7 @@ class TestBigramHistogram(unittest.TestCase):
         self.assertEqual(generate_bigrams("Word"), [])
         self.assertEqual(generate_bigrams(""), [])
 
-    def test_bigram_(self):
+    def test_bigram_singles(self):
         text = "a a a b b a"
         expected_counts = Counter({
             "a a": 2,
