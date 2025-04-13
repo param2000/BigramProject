@@ -1,26 +1,40 @@
 import unittest
 from collections import Counter
-from bigram import clean_text, generate_bigrams, bigram_with_counts, analyze_text_source
+from BigramGeneration import clean_text, generate_bigrams, bigram_with_counts, analyze_text_source
 import tempfile
 import os
 
-class TestBigramHistogram(unittest.TestCase):
+class TestBigram(unittest.TestCase):
 
     def test_clean_text(self):
         """test cleanup cases"""
         self.assertEqual(clean_text("Hello, World!"), "hello world")
         self.assertEqual(clean_text("123 Testing!"), " testing")
         self.assertEqual(clean_text("No@Special#Chars$"), "nospecialchars")
+        self.assertEqual(clean_text("one\ntwo"), "one\ntwo")
+        self.assertEqual(clean_text("ABC Def"), "abc def")
 
     def test_get_bigrams_normal(self):
         text = "The quick brown fox"
         expected = ["the quick", "quick brown", "brown fox"]
         self.assertEqual(generate_bigrams(text), expected)
 
-    def test_get_bigrams_normal(self):
+    def test_get_bigrams_to_handle_numbers(self):
         """Test the presence of numbers in the text"""
         text = "The address is 12345 nowhere street omaha nebraska"
         expected = ['the address','address is', 'is nowhere', 'nowhere street', 'street omaha', 'omaha nebraska']
+        self.assertEqual(generate_bigrams(text), expected)
+
+    def test_to_handle_empty_strings(self):
+        """Test empty string"""
+        text = "                                        "
+        expected = []
+        self.assertEqual(generate_bigrams(text), expected)
+
+    def test_to_handle_empty_strings_and_single_word(self):
+        """Test empty strings and single word"""
+        text = "                                        nebraska"
+        expected = []
         self.assertEqual(generate_bigrams(text), expected)
 
     def test_clean_text_lowercases(self):
@@ -29,12 +43,12 @@ class TestBigramHistogram(unittest.TestCase):
         cleaned = clean_text(text)
         self.assertEqual(cleaned, "abc def")
 
-    def test_generate_bigrams_with_extra_spaces(self):
-        """Test that extra spaces are correctly handled in generate_bigrams."""
-        text = "   Hello    world   "
-        # After cleaning: "hello world " -> split into ['hello', 'world']
-        expected = ["hello world"]
-        self.assertEqual(generate_bigrams(text), expected)
+    def test_newline_delimiter_generation(self):
+        """Test that clean_text keep newline"""
+        expected = ["one two"]
+        self.assertEqual(generate_bigrams("one\ntwo"), expected)
+        self.assertEqual(generate_bigrams("one\n two"), expected)
+        self.assertEqual(generate_bigrams("one \ntwo"), expected)
 
     def test_get_bigrams_insufficient_words(self):
         """one word should not generate a bigram"""
