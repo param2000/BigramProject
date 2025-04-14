@@ -1,19 +1,29 @@
 import re
 import sys
 from collections import Counter
+from typing import Dict, Any
+
 from matplotlib import pyplot as plt
 
 class BigramGeneration:
-    def __init__(self, debug:bool = False, word_size:int =50):
-        self.input_text = ''
-        self.bigram_counts:dict[str:int]={}
+    bigram_token_frequency: dict[str, int]
+    debug: bool
+    WORD_SIZE_LIMIT: int
+    enable_histogram_generation: bool
+    FILENAME_LIMIT: int
+    input_text :str
+
+    def __init__(self, debug:bool = False, word_size:int =50, histogram_generation=True):
+        self.input_text:str = ''
+        self.bigram_token_frequency: dict[str:int]={}
         self.FILENAME_LIMIT = 255
         self.debug = debug
-        self.WORD_SIZE_LIMIT:int = word_size
+        self.WORD_SIZE_LIMIT = word_size
+        self.enable_histogram_generation = histogram_generation
 
     def __str__(self):
-        for bigram, count in self.bigram_counts.items():
-            print(f"{bigram}: {count}")
+        output_lines = [f"{bigram}: {count}" for bigram, count in self.bigram_token_frequency.items()]
+        return "\n".join(output_lines)
 
 
     def clean_text(self,text:str) -> str:
@@ -41,25 +51,31 @@ class BigramGeneration:
         return bigrams
 
 
-    def bigram_token_with_counts(self, text:str) -> dict[str:int]:
+    def bigram_get_token_with_counts(self, text:str) -> dict[str:int]:
         """ return type: dictionary with bigram and count value {"one  two":1} """
         bigrams = self.generate_bigrams_tokens(text)
 
         #generate the dictionary pairs with counts
         #bigram_counts = Counter(bigrams)
-        self.bigram_counts = {}
+        self.bigram_token_frequency = {}
 
         for bigram in bigrams:
-            if bigram in self.bigram_counts:
-                self.bigram_counts[bigram]+=1
+            if bigram in self.bigram_token_frequency:
+                self.bigram_token_frequency[bigram]+=1
             else:
-                self.bigram_counts[bigram]=1
+                self.bigram_token_frequency[bigram]=1
 
         #debugging info
         if self.debug:
             #print(bigrams)
-            print(self.bigram_counts)
-        return self.bigram_counts
+            print(self.bigram_token_frequency)
+
+
+        if self.enable_histogram_generation:
+            self.plot_histogram()
+
+
+        return self.bigram_token_frequency
 
     def parse_bigrams_from_text(self, text_input: str) -> dict[str, int]:
         """
@@ -84,11 +100,11 @@ class BigramGeneration:
         else:
             self.input_text = text_input
 
-        return self.bigram_token_with_counts(self.input_text)
+        return self.bigram_get_token_with_counts(self.input_text)
 
     def plot_histogram(self):
-        tokens = self.bigram_counts.keys()
-        values = self.bigram_counts.values()
+        tokens = self.bigram_token_frequency.keys()
+        values = self.bigram_token_frequency.values()
 
         plt.figure(figsize=(10, 7))
         plt.barh(tokens, values)
@@ -101,21 +117,38 @@ class BigramGeneration:
 
 # Testing/usage
 if __name__ == "__main__":
-    "Please note that words limit is in place"
-    if len(sys.argv) > 1:
-        input_text = sys.argv[1]
-    else:
-        input_text = """The quick brown fox and the quick blue hare. I would like your advice about Rule 143 concerning inadmissibility.
-                    My question relates to something that will come up on Thursday and which I will then raise again.
-                    The Cunha report on multiannual guidance programmes comes before Parliament on Thursday and contains a 
-                    proposal in paragraph 6 that a form of quota penalties should be introduced for countries which fail to meet their fleet reduction targets annually.
-                    It says that this should be done despite the principle of relative stability."""
-        #input_text = "training.en"
+    # Default text if no input provided via command line.
+    default_text = (
+        "The quick brown fox and the quick blue hare. I would like your advice about Rule 143 concerning inadmissibility. "
+        "My question relates to something that will come up on Thursday and which I will then raise again. "
+        "The Cunha report on multiannual guidance programmes comes before Parliament on Thursday and contains a proposal in paragraph 6 "
+        "that a form of quota penalties should be introduced for countries which fail to meet their fleet reduction targets annually. "
+        "It says that this should be done despite the principle of relative stability."
+    )
 
-    bigram_generator = BigramGeneration(debug=True,word_size= 50)
+    # Get input text from command line if provided; otherwise, use the default text.
+    input_text = sys.argv[1] if len(sys.argv) > 1 else default_text
 
+    # Get word size limit from command line or default to 50.
+    try:
+        word_size = int(sys.argv[2]) if len(sys.argv) > 2 else 50
+    except ValueError:
+        print("Invalid word size limit; using default value of 50.")
+        word_size = 50
+
+    # Get histogram flag from command line or default to True.
+    enable_histogram: bool = True
+    if len(sys.argv) > 3:
+        argv3 = sys.argv[3].strip().lower()
+        if argv3 in ("true", "1", "yes"): enable_histogram = True
+        if argv3 in ("false", "0", "no"): enable_histogram = False
+
+    # Create an instance of BigramGeneration.
+    bigram_generator = BigramGeneration(debug=True, word_size=word_size, histogram_generation = enable_histogram)
+
+    # Parse bigrams from the input text.
     counts = bigram_generator.parse_bigrams_from_text(input_text)
-    for bigram, count in counts.items():
-        print(f"{bigram}: {count}")
 
-    bigram_generator.plot_histogram()
+    # Print the bigrams and their counts.
+    print(bigram_generator)
+

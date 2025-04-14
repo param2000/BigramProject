@@ -9,7 +9,7 @@ class TestBigram(unittest.TestCase):
 
     def setUp(self):
         # Create an analyzer instance with a high word limit (e.g. 5000) so that tests are not limited.
-        self.analyzer = BigramGeneration(debug=False, word_size=20)
+        self.analyzer = BigramGeneration(debug=False, word_size=20,histogram_generation=False)
 
     def test_clean_operation(self):
         """Test cleanup cases. extract alpha numerica values"""
@@ -79,8 +79,8 @@ class TestBigram(unittest.TestCase):
             "b a": 1
         })
         # Reset bigram_counts to get a fresh count.
-        self.analyzer.bigram_counts = {}
-        self.assertEqual(self.analyzer.bigram_token_with_counts(text), expected_counts)
+        self.analyzer.bigram_token_frequency = {}
+        self.assertEqual(self.analyzer.bigram_get_token_with_counts(text), expected_counts)
 
     def test_analyze_text_source_with_file(self):
         """Test that reading from a temporary file produces the correct bigram counts."""
@@ -97,7 +97,7 @@ class TestBigram(unittest.TestCase):
             #print(temp_path)
             #print(temp.name)
         try:
-            self.analyzer.bigram_counts = {}
+            self.analyzer.bigram_token_frequency = {}
             result = self.analyzer.parse_bigrams_from_text(temp_path)
             self.assertEqual(result, expected)
         finally:
@@ -112,7 +112,7 @@ class TestBigram(unittest.TestCase):
             "three one": 1
         })
         # Reset bigram_counts before processing.
-        self.analyzer.bigram_counts = {}
+        self.analyzer.bigram_token_frequency = {}
         result = self.analyzer.parse_bigrams_from_text(text)
         self.assertEqual(result, expected)
 
