@@ -14,6 +14,8 @@ Assumptions
 - Special characters are removed before bigram generation.
 - All text is converted to lowercase (as shown in the examples).
 - Unicode characters are supported (e.g., Café).
+-must supply word-size to parse everything as size is restriction to make sure timely output and reasonable histogram display happens
+
 
 -------------------------
 How to Use (Command Line)
@@ -50,18 +52,20 @@ Arguments:
 Example Usages:
 ---------------
 1. Run with default text (no arguments):
-   python bigram_generator.py
+   python BigramGeneration.py
 
-2. Run with a file:
-   python bigram_generator.py training.en --word-size 100 --histogram true
-   (Here, the file "training.en" is used as input.)
+2. Run with a file:(Here, the file "training.en" is used as input.)
+   python BigramGeneration.py training.en --word-size 100 --histogram true
+
 
 3. Run with raw input text and disable histogram:
-   python bigram_generator.py "The rain in Spain stays mainly in the plain" --word-size 20 --histogram false
+   python BigramGeneration.py "The rain in Spain stays mainly in the plain" --word-size 20 --histogram false
 
 4. Run with debug mode enabled:
-   python bigram_generator.py "Your sample text here" --debug
+   python BigramGeneration.py "Your sample text here" --debug
 
+5. Run all of argument together
+   python BigramGeneration.py training.en --word-size 1000 --histogram yes --debug
 -----------------------
 Features & Functionality
 -----------------------
