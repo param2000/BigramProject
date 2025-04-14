@@ -3,56 +3,64 @@
 -Author: Paramjit Raloowall                                 -
 -------------------------------------------------------------
 
-This program reads input text or a text file, generates bigram tokens, with their frequency counts.
-Optionally, it displays a histogram to visualize the frequency of each bigram. Default is enabled
-Longer filenames are treated as simple strings to avoid any file character limit failures
+This program reads input text or a text file, generates bigram tokens with their frequency counts, and optionally displays a histogram to visualize the frequency of each bigram. By default, histogram generation is enabled.
+Longer filenames are treated as simple strings to avoid any file character limit issues.
 
 --------------------------
 Assumptions
 --------------------------
-Numerical value are part of the Bigram generation, "1235 street" is valid token
-word's split is based on default split behavior of the python
-Special characters are removed before bigram generation
-everything is converted to lowercase as shown in the example provided in the document
-Unicode characters are valid tokens example Café
-
+- Numerical values are part of the bigram generation, e.g., "1235 street" is a valid token.
+- Word splitting is based on Python’s default string split behavior.
+- Special characters are removed before bigram generation.
+- All text is converted to lowercase (as shown in the examples).
+- Unicode characters are supported (e.g., Café).
 
 -------------------------
 How to Use (Command Line)
 -------------------------
-Note, python is installed as 'python' argument if python is installed as python3 modify the usage accordingly
+Note: The program uses argparse for a robust CLI. If Python is installed as 'python3' instead of 'python', adjust the usage accordingly.
 
-python bigram_generator.py [input_text_or_filename] [word_limit] [enable_histogram]
+Basic usage:
+   python bigram_generator.py [input_text_or_filename] [--word-size WORD_SIZE] [--histogram {true,false}] [--debug]
 
 Arguments:
 ----------
-1. input_text_or_filename (optional):
+1. input_text_or_filename (positional, optional):
    - Path to a .txt file OR a raw string of text.
-   - If the argument matches a valid file, the file contents are read.
+   - If the argument corresponds to an existing file, its contents will be read.
    - Otherwise, it is treated as raw input text.
-   - If not provided, default sample text will be used.
+   - If not provided, a default sample text is used.
 
-2. word_limit (optional):
+2. --word-size (optional):
    - Maximum number of words to consider for bigram generation.
    - Defaults to 50.
+   - Example: --word-size 100
 
-3. enable_histogram (optional):
-   - Whether to show a histogram plot.
-   - Accepts "true", "false", "1", "0", "yes", "no".
+3. --histogram (optional):
+   - Enable or disable the histogram plot.
+   - Accepts "true", "false", "1", "0", "yes", or "no".
    - Defaults to "true".
+   - Example: --histogram false
+
+4. --debug (optional):
+   - Enable debug output for additional internal process details.
+   - Simply include the flag if debugging is desired.
+   - Example: --debug
 
 Example Usages:
 ---------------
-1. Run with default text:
+1. Run with default text (no arguments):
    python bigram_generator.py
 
 2. Run with a file:
-   python bigram_generator.py training.en 100 true
-   training.en file is included
+   python bigram_generator.py training.en --word-size 100 --histogram true
+   (Here, the file "training.en" is used as input.)
 
-3. Run with raw input and disable histogram:
-   python bigram_generator.py "The rain in Spain stays mainly in the plain" 20 false
+3. Run with raw input text and disable histogram:
+   python bigram_generator.py "The rain in Spain stays mainly in the plain" --word-size 20 --histogram false
 
+4. Run with debug mode enabled:
+   python bigram_generator.py "Your sample text here" --debug
 
 -----------------------
 Features & Functionality
@@ -61,9 +69,9 @@ Features & Functionality
 ✓ Generates bigrams as space-separated strings (e.g., "quick brown").
 ✓ Outputs a dictionary of bigram counts.
 ✓ Limits analysis to the first N words (default: 50).
-✓ Cleans text to remove punctuation and normalize case.
+✓ Cleans text by removing punctuation, handling hyphens, and normalizing case.
 ✓ Optionally plots a horizontal histogram using matplotlib.
-✓ Handles both raw string input and text files gracefully.
+✓ Processes both raw string input and text file contents gracefully.
 ✓ Debug mode prints internal structures for transparency.
 
 ---------------
@@ -71,11 +79,11 @@ Program Structure
 ---------------
 
 Class: BigramGeneration
-- clean_text(text): Cleans input text by return only characters and numbers and lowering case.
+- clean_text(text): Cleans the input text (removes extra punctuation, splits hyphenated words, converts to lowercase).
 - generate_bigrams_tokens(text): Returns a list of bigram strings.
-- bigram_get_token_with_counts(text): Returns a dictionary of bigram → count.
-- parse_bigrams_from_text(text_input): Handles file or text input and triggers the analysis and outputs.
-- plot_histogram(): Displays histogram of bigram frequency.
+- bigram_get_token_with_counts(text): Returns a dictionary mapping each bigram to its frequency count.
+- parse_bigrams_from_text(text_input): Determines whether the input is a file or raw text, then performs analysis.
+- plot_histogram(): Displays a histogram of the bigram frequencies using matplotlib.
 
 ----------
 Dependencies
@@ -83,24 +91,23 @@ Dependencies
 - Python 3.12 or higher
 - matplotlib
 
-Install matplotlib default is needed:
-> pip install matplotlib
+To install matplotlib, run:
+   pip install matplotlib
 
 ------------
 Output Example
 ------------
-the quick: 2
-quick brown: 1
-brown fox: 1
-...
+For a sample input, the program outputs bigrams and their counts, e.g.:
 
-Also displays a bar chart (if histogram is enabled).
+   the quick: 2
+   quick brown: 1
+   brown fox: 1
+   ...
 
+Additionally, if histogram generation is enabled, a bar chart of the bigram frequencies is displayed.
 
 ----------------
 Unit Testing
 ----------------
-    --run the code below
-    --Note histogram is suppressed for unit testing
-    -- -v for verbose
-    python TestBigramGeneration.py -v
+To run unit tests (with histogram suppressed), use the following command:
+   python TestBigramGeneration.py -v

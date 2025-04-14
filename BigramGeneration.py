@@ -1,5 +1,7 @@
+import argparse
 import re
 import sys
+import os
 
 from matplotlib import pyplot as plt
 
@@ -13,7 +15,7 @@ class BigramGeneration:
 
     def __init__(self, debug:bool = False, word_size:int =50, histogram_generation=True):
         self.input_text:str = ''
-        self.bigram_token_frequency: dict[str:int]={}
+        self.bigram_token_frequency: dict[str, int]={}
         self.FILENAME_LIMIT = 255
         self.debug = debug
         self.WORD_SIZE_LIMIT = word_size
@@ -28,8 +30,12 @@ class BigramGeneration:
         """ return string after cleanup [sub string]"""
         # Lowercase and remove non-alphabetic characters except spaces
         #temp = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower())
-        temp = inputtext.lower().replace('-', ' ')
-        temp=re.sub(r'[^\w\s]', '', temp, flags=re.UNICODE)
+        #temp = inputtext.lower().replace('-', ' ')
+        #temp=re.sub(r'[^\w\s]', '', temp, flags=re.UNICODE)
+
+        #Replace hyphens that occur between word characters only.
+        temp = re.sub(r'(?<=\w)-(?=\w)', ' ', inputtext.lower())
+        temp = re.sub(r'[^\w\s]', '', temp, flags=re.UNICODE)
 
         #if self.debug: print (temp)
         return temp
@@ -79,34 +85,26 @@ class BigramGeneration:
         return self.bigram_token_frequency
 
     def parse_bigrams_from_text(self, text_input: str) -> dict[str, int]:
+        """Analyze the input text to generate bigram tokens
+            if the input_text is a path present for am existing file then the file will be read for input_text
+            Otherwise input_text is assumed to be a simple raw text input.
         """
-            Analyzes the input source to generate bigram counts.
-            If `text_input` is a string with a length less than or equal to `self.FILENAME_LIMIT`, the method
-            will attempt to open it as a file. If the file cannot be found, or if the input exceeds the limit,
-            it will treat `text_input` as raw text. The text is then processed to generate a dictionary of bigram counts.
-            :param text_input: A file path or a plain text string.
-            :return: A dictionary with bigrams as keys and their occurrence counts as values.
-            :raises ValueError: If the provided input is not a string.
-        """
+
         if not isinstance(text_input, str):
             raise ValueError("Input must be a string path or plain text")
 
-        # Attempt to treat text_input as a file if within the filename length limit.
-        if len(text_input) <= self.FILENAME_LIMIT:
-            try:
-                with open(text_input, 'r', encoding='utf-8') as f:
-                    self.input_text = f.read()
-            except FileNotFoundError:
-                self.input_text = text_input  # Fallback: treat as raw text if file not found.
+        if os.path.exists(text_input):
+            with open(text_input, 'r', encoding='utf-8') as f:
+                self.input_text = f.read()
         else:
             self.input_text = text_input
+
 
         return self.bigram_get_token_with_counts(self.input_text)
 
     def plot_histogram(self):
         #tokens = self.bigram_token_frequency.keys()
         #values = self.bigram_token_frequency.values()
-
 
         # Sort items by frequency (highest first)
         sorted_items = sorted(self.bigram_token_frequency.items(), key=lambda item: item[1], reverse=True)
@@ -140,30 +138,29 @@ if __name__ == "__main__":
         "that a form of quota penalties should be introduced for countries which fail to meet their fleet reduction targets annually. "
         "It says that this should be done despite the principle of relative stability."
     )
+    parser = argparse.ArgumentParser(description="Bigram Generation Program")
+    parser.add_argument("input_text", nargs="?", default=default_text,
+                        help="Input text or file path to parse for bigrams.")
+    parser.add_argument("--word-size", type=int, default=50,
+                        help="Word size limit for bigram generation (default: 50).")
+    parser.add_argument("--histogram", type=str, default="true",
+                        help="Enable histogram generation (true/false, 1/0, yes/no; default: true).")
+    parser.add_argument("--debug", action="store_true", default=False,
+                        help="Enable debug output.")
+    args = parser.parse_args()
 
-    # Get input text from command line if provided; otherwise, use the default text.
-    input_text = sys.argv[1] if len(sys.argv) > 1 else default_text
-
-    # Get word size limit from command line or default to 50.
-    try:
-        word_size = int(sys.argv[2]) if len(sys.argv) > 2 else 50
-    except ValueError:
-        print("Invalid word size limit; using default value of 50.")
-        word_size = 50
-
-    # Get histogram flag from command line or default to True.
-    enable_histogram: bool = True
-    if len(sys.argv) > 3:
-        argv3 = sys.argv[3].strip().lower()
-        if argv3 in ("true", "1", "yes"): enable_histogram = True
-        if argv3 in ("false", "0", "no"): enable_histogram = False
+    # Convert the histogram flag to a boolean.
+    enable_histogram = args.histogram.lower() in ("true", "1", "yes")
 
     # Create an instance of BigramGeneration.
-    bigram_generator = BigramGeneration(debug=False, word_size=word_size, histogram_generation = enable_histogram)
+    bigram_generator = BigramGeneration(debug=args.debug,
+                                        word_size=args.word_size,
+                                        histogram_generation=enable_histogram)
 
-    # Parse bigrams from the input text.
-    counts = bigram_generator.parse_bigrams_from_text(input_text)
+    # Parse and generate bigram counts from the given input.
+    counts = bigram_generator.parse_bigrams_from_text(args.input_text)
 
-    # Print the bigrams and their counts.
+    # Print the generated bigrams and their counts.
     print(bigram_generator)
+
 
