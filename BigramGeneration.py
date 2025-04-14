@@ -3,10 +3,9 @@ import sys
 from collections import Counter
 from matplotlib import pyplot as plt
 
-
-
 class BigramGeneration:
     def __init__(self, debug:bool = False, word_size:int =50):
+        self.input_text = ''
         self.bigram_counts:dict[str:int]={}
         self.FILENAME_LIMIT = 255
         self.debug = debug
@@ -20,11 +19,11 @@ class BigramGeneration:
     def clean_text(self,text:str) -> str:
         """ return string after cleanup [sub string]"""
         # Lowercase and remove non-alphabetic characters except spaces
-        temp = re.sub(r'[^a-zA-Z\s]', '', text.lower())
+        temp = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower())
         #if self.debug: print (temp)
         return temp
 
-    def generate_bigrams(self, text:str)->list[str]:
+    def generate_bigrams_tokens(self, text:str) -> list[str]:
         """Bigram Generation, return list of string {'one two'}"""
 
         words = self.clean_text(text).split()
@@ -42,12 +41,13 @@ class BigramGeneration:
         return bigrams
 
 
-    def bigram_with_counts(self, text:str)->dict[str:int]:
+    def bigram_token_with_counts(self, text:str) -> dict[str:int]:
         """ return type: dictionary with bigram and count value {"one  two":1} """
-        bigrams = self.generate_bigrams(text)
+        bigrams = self.generate_bigrams_tokens(text)
 
         #generate the dictionary pairs with counts
         #bigram_counts = Counter(bigrams)
+        self.bigram_counts = {}
 
         for bigram in bigrams:
             if bigram in self.bigram_counts:
@@ -61,14 +61,12 @@ class BigramGeneration:
             print(self.bigram_counts)
         return self.bigram_counts
 
-    def analyze_input_source(self, text_input: str) -> dict[str, int]:
+    def parse_bigrams_from_text(self, text_input: str) -> dict[str, int]:
         """
             Analyzes the input source to generate bigram counts.
-
             If `text_input` is a string with a length less than or equal to `self.FILENAME_LIMIT`, the method
             will attempt to open it as a file. If the file cannot be found, or if the input exceeds the limit,
             it will treat `text_input` as raw text. The text is then processed to generate a dictionary of bigram counts.
-
             :param text_input: A file path or a plain text string.
             :return: A dictionary with bigrams as keys and their occurrence counts as values.
             :raises ValueError: If the provided input is not a string.
@@ -80,18 +78,15 @@ class BigramGeneration:
         if len(text_input) <= self.FILENAME_LIMIT:
             try:
                 with open(text_input, 'r', encoding='utf-8') as f:
-                    text = f.read()
+                    self.input_text = f.read()
             except FileNotFoundError:
-                text = text_input  # Fallback: treat as raw text if file not found.
+                self.input_text = text_input  # Fallback: treat as raw text if file not found.
         else:
-            text = text_input
+            self.input_text = text_input
 
-        return self.bigram_with_counts(text)
+        return self.bigram_token_with_counts(self.input_text)
 
     def plot_histogram(self):
-        #labels, values = zip(*self.bigram_counts.items())
-        #print(labels)
-        #print(values)
         tokens = self.bigram_counts.keys()
         values = self.bigram_counts.values()
 
@@ -99,7 +94,7 @@ class BigramGeneration:
         plt.barh(tokens, values)
         plt.xlabel("Frequency")
         plt.ylabel("Bigrams(n=2)")
-        plt.title("Bigram Frequency Histogram")
+        plt.title("Bigram Token Frequency Histogram")
         plt.tight_layout()
         plt.show()
 
@@ -119,7 +114,7 @@ if __name__ == "__main__":
 
     bigram_generator = BigramGeneration(debug=True,word_size= 50)
 
-    counts = bigram_generator.analyze_input_source(input_text)
+    counts = bigram_generator.parse_bigrams_from_text(input_text)
     for bigram, count in counts.items():
         print(f"{bigram}: {count}")
 
