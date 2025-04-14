@@ -27,4 +27,9 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          python -m unittest -v TestBigramGeneration.py -v
+          python -m unittest TestBigramGeneration.py -v
+
+      - name: Run program and show output
+        run: | 
+          # run the bigram generation 
+          python -u BigramGeneration.py
