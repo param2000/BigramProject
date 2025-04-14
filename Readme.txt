@@ -16,6 +16,7 @@ word's split is based on default split behavior of the python
 -------------------------
 How to Use (Command Line)
 -------------------------
+Note, python is installed as 'python' argument if python is installed as python3 modify the usage accordingly
 
 python bigram_generator.py [input_text_or_filename] [word_limit] [enable_histogram]
 
