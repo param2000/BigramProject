@@ -96,3 +96,11 @@ brown fox: 1
 
 Also displays a bar chart (if histogram is enabled).
 
+
+----------------
+Unit Testing
+----------------
+    --run the code below
+    --Note histogram is suppressed for unit testing
+    -- -v for verbose
+    python TestBigramGeneration.py -v

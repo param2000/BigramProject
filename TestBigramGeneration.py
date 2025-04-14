@@ -71,12 +71,7 @@ class TestBigram(unittest.TestCase):
     def test_bigram_singles(self):
         """Test with a sequence of single characters."""
         text = "a a a b b a"
-        expected_counts = {
-            "a a": 2,
-            "a b": 1,
-            "b b": 1,
-            "b a": 1
-        }
+        expected_counts = { "a a": 2, "a b": 1, "b b": 1, "b a": 1}
         # Reset bigram_counts to get a fresh count.
         self.analyzer.bigram_token_frequency = {}
         self.assertEqual(self.analyzer.bigram_get_token_with_counts(text), expected_counts)
@@ -84,11 +79,7 @@ class TestBigram(unittest.TestCase):
     def test_analyze_text_source_with_file(self):
         """Test that reading from a temporary file produces the correct bigram counts."""
         content = "foo bar baz foo bar"
-        expected = {
-            "foo bar": 2,
-            "bar baz": 1,
-            "baz foo": 1
-        }
+        expected = { "foo bar": 2, "bar baz": 1, "baz foo": 1}
 
         with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.txt') as temp:
             temp.write(content)
@@ -105,11 +96,8 @@ class TestBigram(unittest.TestCase):
     def test_correct_frequency_output(self):
         """Test frequencies with raw text input."""
         text = "one two three one two"
-        expected = {
-            "one two": 2,
-            "two three": 1,
-            "three one": 1
-        }
+        expected = {"one two": 2, "two three": 1, "three one": 1}
+
         # Reset bigram_counts before processing.
         self.analyzer.bigram_token_frequency = {}
         result = self.analyzer.parse_bigrams_from_text(text)

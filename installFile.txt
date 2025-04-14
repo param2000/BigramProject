@@ -1,2 +1,0 @@
- #copy this into the command line and install
- pip install matplotlib
