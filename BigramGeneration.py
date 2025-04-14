@@ -1,7 +1,5 @@
 import re
 import sys
-from collections import Counter
-from typing import Dict, Any
 
 from matplotlib import pyplot as plt
 
@@ -30,8 +28,8 @@ class BigramGeneration:
         """ return string after cleanup [sub string]"""
         # Lowercase and remove non-alphabetic characters except spaces
         #temp = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower())
-
-        temp=re.sub(r'[^\w\s]', '', inputtext.lower(), flags=re.UNICODE)
+        temp = inputtext.lower().replace('-', ' ')
+        temp=re.sub(r'[^\w\s]', '', temp, flags=re.UNICODE)
 
         #if self.debug: print (temp)
         return temp
@@ -106,17 +104,40 @@ class BigramGeneration:
         return self.bigram_get_token_with_counts(self.input_text)
 
     def plot_histogram(self):
-        tokens = self.bigram_token_frequency.keys()
-        values = self.bigram_token_frequency.values()
+        #tokens = self.bigram_token_frequency.keys()
+        #values = self.bigram_token_frequency.values()
 
-        plt.figure(figsize=(10, 7))
-        plt.barh(tokens, values)
+
+        # Sort items by frequency (highest first)
+        sorted_items = sorted(self.bigram_token_frequency.items(), key=lambda item: item[1], reverse=True)
+        tokens, values = zip(*sorted_items)
+
+        # Dynamically adjust the figure height based on the number of tokens
+        # Adjust the multiplier (e.g., 0.15) as needed for readability.
+        fig_height = 1 + len(tokens) * 0.15
+
+        plt.figure(figsize=(20, fig_height))
+        plt.barh(range(len(tokens)), values, tick_label=tokens)
         plt.xlabel("Frequency")
-        plt.ylabel("Bigrams(n=2)")
+        plt.ylabel("Bigrams (n=2)")
         plt.title("Bigram Token Frequency Histogram")
+        # Invert y-axis so the highest frequency is at the top.
+        plt.gca().invert_yaxis()
+        # Adjust the font size of y-tick labels for better readability.
+        plt.yticks(fontsize=6)
         plt.tight_layout()
-        #plt.pause(10)
         plt.show()
+
+
+
+        #plt.figure(figsize=(20, 15))
+        #plt.barh(tokens, values)
+        #plt.xlabel("Frequency")
+        #plt.ylabel("Bigrams(n=2)")
+        #plt.title("Bigram Token Frequency Histogram")
+        #plt.tight_layout()
+        #plt.pause(10)
+        #plt.show()
 
 
 # Testing/usage
@@ -148,7 +169,7 @@ if __name__ == "__main__":
         if argv3 in ("false", "0", "no"): enable_histogram = False
 
     # Create an instance of BigramGeneration.
-    bigram_generator = BigramGeneration(debug=True, word_size=word_size, histogram_generation = enable_histogram)
+    bigram_generator = BigramGeneration(debug=False, word_size=word_size, histogram_generation = enable_histogram)
 
     # Parse bigrams from the input text.
     counts = bigram_generator.parse_bigrams_from_text(input_text)

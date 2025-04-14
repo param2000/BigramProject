@@ -32,4 +32,4 @@ jobs:
       - name: Run program and show output
         run: | 
           # run the bigram generation 
-          python -u BigramGeneration.py
+          python -u BigramGeneration.py training.en 500

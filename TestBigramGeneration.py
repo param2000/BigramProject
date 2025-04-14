@@ -17,6 +17,7 @@ class TestBigram(unittest.TestCase):
         self.assertEqual(self.analyzer.clean_text("No@Special#Chars$"), "nospecialchars")
         self.assertEqual(self.analyzer.clean_text("one\ntwo"), "one\ntwo")
         self.assertEqual(self.analyzer.clean_text("ABC Def"), "abc def")
+        self.assertEqual(self.analyzer.clean_text("year-old"), "year old")
 
     def test_get_bigrams_normal(self):
         text = "The quick brown fox and the quick blue hare"
@@ -143,6 +144,12 @@ class TestBigram(unittest.TestCase):
         """Test accented letters"""
         input_string = "Café au lait"
         expected_output = {"café au": 1,"au lait":1}
+        self.assertEqual(self.analyzer.parse_bigrams_from_text(input_string), expected_output )
+
+    def test_minus_sign(self):
+        """Test minus sign between words like year-old"""
+        input_string = "year-old"
+        expected_output = {"year old": 1}
         self.assertEqual(self.analyzer.parse_bigrams_from_text(input_string), expected_output )
 
 if __name__ == '__main__':
