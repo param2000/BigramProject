@@ -113,31 +113,21 @@ class BigramGeneration:
         tokens, values = zip(*sorted_items)
 
         # Dynamically adjust the figure height based on the number of tokens
+        #todo figure the large data set display
         # Adjust the multiplier (e.g., 0.15) as needed for readability.
-        fig_height = 1 + len(tokens) * 0.15
+        #fig_height = 1 + len(tokens) * 0.15
 
-        plt.figure(figsize=(20, fig_height))
+        plt.figure(figsize=(16, 12))
         plt.barh(range(len(tokens)), values, tick_label=tokens)
         plt.xlabel("Frequency")
         plt.ylabel("Bigrams (n=2)")
         plt.title("Bigram Token Frequency Histogram")
         # Invert y-axis so the highest frequency is at the top.
-        plt.gca().invert_yaxis()
+        #plt.gca().invert_yaxis()
         # Adjust the font size of y-tick labels for better readability.
-        plt.yticks(fontsize=6)
+        plt.yticks(fontsize=5)
         plt.tight_layout()
         plt.show()
-
-
-
-        #plt.figure(figsize=(20, 15))
-        #plt.barh(tokens, values)
-        #plt.xlabel("Frequency")
-        #plt.ylabel("Bigrams(n=2)")
-        #plt.title("Bigram Token Frequency Histogram")
-        #plt.tight_layout()
-        #plt.pause(10)
-        #plt.show()
 
 
 # Testing/usage
