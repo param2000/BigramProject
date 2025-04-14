@@ -26,10 +26,13 @@ class BigramGeneration:
         return "\n".join(output_lines)
 
 
-    def clean_text(self,text:str) -> str:
+    def clean_text(self, inputtext:str) -> str:
         """ return string after cleanup [sub string]"""
         # Lowercase and remove non-alphabetic characters except spaces
-        temp = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower())
+        #temp = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower())
+
+        temp=re.sub(r'[^\w\s]', '', inputtext.lower(), flags=re.UNICODE)
+
         #if self.debug: print (temp)
         return temp
 

@@ -1,5 +1,4 @@
 import unittest
-from collections import Counter
 from BigramGeneration import BigramGeneration  # Adjust module name if necessary
 import tempfile
 import os
@@ -72,12 +71,12 @@ class TestBigram(unittest.TestCase):
     def test_bigram_singles(self):
         """Test with a sequence of single characters."""
         text = "a a a b b a"
-        expected_counts = Counter({
+        expected_counts = {
             "a a": 2,
             "a b": 1,
             "b b": 1,
             "b a": 1
-        })
+        }
         # Reset bigram_counts to get a fresh count.
         self.analyzer.bigram_token_frequency = {}
         self.assertEqual(self.analyzer.bigram_get_token_with_counts(text), expected_counts)
@@ -85,11 +84,11 @@ class TestBigram(unittest.TestCase):
     def test_analyze_text_source_with_file(self):
         """Test that reading from a temporary file produces the correct bigram counts."""
         content = "foo bar baz foo bar"
-        expected = Counter({
+        expected = {
             "foo bar": 2,
             "bar baz": 1,
             "baz foo": 1
-        })
+        }
 
         with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.txt') as temp:
             temp.write(content)
@@ -106,11 +105,11 @@ class TestBigram(unittest.TestCase):
     def test_correct_frequency_output(self):
         """Test frequencies with raw text input."""
         text = "one two three one two"
-        expected = Counter({
+        expected = {
             "one two": 2,
             "two three": 1,
             "three one": 1
-        })
+        }
         # Reset bigram_counts before processing.
         self.analyzer.bigram_token_frequency = {}
         result = self.analyzer.parse_bigrams_from_text(text)
@@ -128,6 +127,35 @@ class TestBigram(unittest.TestCase):
         result = self.analyzer.parse_bigrams_from_text(filename)
         self.assertEqual(result, expected)
 
+    def test_mixed_case_case_sensitive(self):
+        """Test repeating tokens"""
+        input_string = "The the The"
+        expected_output = {"the the": 2}
+        self.assertEqual(self.analyzer.parse_bigrams_from_text(input_string), expected_output )
+
+    def test_only_punctuation_marks(self):
+        """Test just punctuation marks"""
+        input_string = "!!! ???"
+        expected_output = {}
+        self.assertEqual(self.analyzer.parse_bigrams_from_text(input_string), expected_output )
+
+    def test_single_space(self):
+        """Test single space characters"""
+        input_string = " "
+        expected_output = {}
+        self.assertEqual(self.analyzer.parse_bigrams_from_text(input_string), expected_output )
+
+    def test_just_numbers(self):
+        """Test just number tokens"""
+        input_string = "123 456 123"
+        expected_output = {"123 456": 1,"456 123":1}
+        self.assertEqual(self.analyzer.parse_bigrams_from_text(input_string), expected_output )
+
+    def test_accented_letters(self):
+        """Test accented letters"""
+        input_string = "Café au lait"
+        expected_output = {"café au": 1,"au lait":1}
+        self.assertEqual(self.analyzer.parse_bigrams_from_text(input_string), expected_output )
 
 if __name__ == '__main__':
     unittest.main()

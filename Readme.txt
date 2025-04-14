@@ -12,6 +12,10 @@ Assumptions
 --------------------------
 Numerical value are part of the Bigram generation, "1235 street" is valid token
 word's split is based on default split behavior of the python
+Special characters are removed before bigram generation
+everything is converted to lowercase as shown in the example provided in the document
+Unicode characters are valid tokens example Café
+
 
 -------------------------
 How to Use (Command Line)
