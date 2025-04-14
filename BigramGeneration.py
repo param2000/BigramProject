@@ -115,6 +115,7 @@ class BigramGeneration:
         plt.ylabel("Bigrams(n=2)")
         plt.title("Bigram Token Frequency Histogram")
         plt.tight_layout()
+        #plt.pause(10)
         plt.show()
 
 
