@@ -6,9 +6,9 @@ from matplotlib import pyplot as plt
 
 
 class BigramGeneration:
-    def __init__(self, debug:bool = False, word_size:int =10):
+    def __init__(self, debug:bool = False, word_size:int =50):
         self.bigram_counts:dict[str:int]={}
-
+        self.FILENAME_LIMIT = 255
         self.debug = debug
         self.WORD_SIZE_LIMIT:int = word_size
 
@@ -61,28 +61,42 @@ class BigramGeneration:
             print(self.bigram_counts)
         return self.bigram_counts
 
+    def analyze_input_source(self, text_input: str) -> dict[str, int]:
+        """
+            Analyzes the input source to generate bigram counts.
 
-    def analyze_text_source(self, source:str) -> dict[str:int]:
-        if isinstance(source, str):
-            try:
-                with open(source, 'r') as f:
-                    text = f.read()
-            except FileNotFoundError:
-                text = source  # Treat input as plain text
-        else:
+            If `text_input` is a string with a length less than or equal to `self.FILENAME_LIMIT`, the method
+            will attempt to open it as a file. If the file cannot be found, or if the input exceeds the limit,
+            it will treat `text_input` as raw text. The text is then processed to generate a dictionary of bigram counts.
+
+            :param text_input: A file path or a plain text string.
+            :return: A dictionary with bigrams as keys and their occurrence counts as values.
+            :raises ValueError: If the provided input is not a string.
+        """
+        if not isinstance(text_input, str):
             raise ValueError("Input must be a string path or plain text")
 
-        #get bigrams
-        bigram_dic_with_counts  = self.bigram_with_counts(text)
+        # Attempt to treat text_input as a file if within the filename length limit.
+        if len(text_input) <= self.FILENAME_LIMIT:
+            try:
+                with open(text_input, 'r', encoding='utf-8') as f:
+                    text = f.read()
+            except FileNotFoundError:
+                text = text_input  # Fallback: treat as raw text if file not found.
+        else:
+            text = text_input
 
-        #if self.debug: print(bigram_dic_with_counts)
-
-        return bigram_dic_with_counts
+        return self.bigram_with_counts(text)
 
     def plot_histogram(self):
-        labels, values = zip(*self.bigram_counts.items())
+        #labels, values = zip(*self.bigram_counts.items())
+        #print(labels)
+        #print(values)
+        tokens = self.bigram_counts.keys()
+        values = self.bigram_counts.values()
+
         plt.figure(figsize=(10, 7))
-        plt.barh(labels, values)
+        plt.barh(tokens, values)
         plt.xlabel("Frequency")
         plt.ylabel("Bigrams(n=2)")
         plt.title("Bigram Frequency Histogram")
@@ -96,12 +110,16 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         input_text = sys.argv[1]
     else:
-        #input_text = "The quick brown fox and the quick blue hare."
-        input_text = "training.en"
+        input_text = """The quick brown fox and the quick blue hare. I would like your advice about Rule 143 concerning inadmissibility.
+                    My question relates to something that will come up on Thursday and which I will then raise again.
+                    The Cunha report on multiannual guidance programmes comes before Parliament on Thursday and contains a 
+                    proposal in paragraph 6 that a form of quota penalties should be introduced for countries which fail to meet their fleet reduction targets annually.
+                    It says that this should be done despite the principle of relative stability."""
+        #input_text = "training.en"
 
     bigram_generator = BigramGeneration(debug=True,word_size= 50)
 
-    counts = bigram_generator.analyze_text_source(input_text)
+    counts = bigram_generator.analyze_input_source(input_text)
     for bigram, count in counts.items():
         print(f"{bigram}: {count}")
 

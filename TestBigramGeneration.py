@@ -85,10 +85,11 @@ class TestBigram(unittest.TestCase):
         with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.txt') as temp:
             temp.write(content)
             temp_path = temp.name
-
+            #print(temp_path)
+            #print(temp.name)
         try:
             self.analyzer.bigram_counts = {}
-            result = self.analyzer.analyze_text_source(temp_path)
+            result = self.analyzer.analyze_input_source(temp_path)
             self.assertEqual(result, expected)
         finally:
             os.remove(temp_path)
@@ -103,13 +104,20 @@ class TestBigram(unittest.TestCase):
         })
         # Reset bigram_counts before processing.
         self.analyzer.bigram_counts = {}
-        result = self.analyzer.analyze_text_source(text)
+        result = self.analyzer.analyze_input_source(text)
         self.assertEqual(result, expected)
 
     def test_analyze_text_source_invalid_input(self):
         """Test that analyze_text_source raises ValueError when input is not a string."""
         with self.assertRaises(ValueError):
-            self.analyzer.analyze_text_source(123)
+            self.analyzer.analyze_input_source(123)
+
+    def test_long_filename_handling(self):
+        """Test that longer filename are treated as simple strings"""
+        filename = "a" * 255 +'txt'
+        expected = {}
+        result = self.analyzer.analyze_input_source(filename)
+        self.assertEqual(result, expected)
 
 
 if __name__ == '__main__':

@@ -12,10 +12,11 @@ if you don't want to install the visual matplotlib library please comment line 5
     --Special care has been taken to leverage built-in libraries rather than reinventing functionality.
     --word split is based on the space character ' '
 **ASSUMPTION**
-    --By default, the program can process up to 5000 words.
+    --By default, the program can process up to 50 words.
     --This limit is defined by a constant (WORD_SIZE_LIMIT:int =5000),
     --which you can modify if you need to handle a larger input;
     --however, the program is designed to work within this default cap.
+    --Longer filenames are treated as simple strings
 
 ##Pre-requisites
 - **Python Version**
